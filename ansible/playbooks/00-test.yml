@@ -1,0 +1,11 @@
+---
+- name: Test Playbook for RHEL hosts
+  hosts: myhosts
+  become: yes
+  ignore_errors: yes
+  tasks:
+  - name: check Red Hat release
+    shell: 'uname -r'
+    register: RHELrelease
+  - name: make file with name based on release in root folder
+    shell: 'touch /root/{{ RHELrelease.stdout }}'

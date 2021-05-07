@@ -1,0 +1,6 @@
+#This file is expected to be in /etc/ansible
+#a typical format is [groupname] with IPs or hostnames each on subsequent lines
+#if your ansible target is one host, ensure its name or IP is below on a line without square brackets
+
+[myhosts]
+192.168.0.4 # feel free to replace with your target host name or ip

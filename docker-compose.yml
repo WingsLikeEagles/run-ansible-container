@@ -1,0 +1,11 @@
+version: '3.6'
+
+services:
+  ansible:
+    container_name: ansible
+    build:
+      context: ansible
+    volumes:
+      - sshkeys:/container/ansible/sshkeys
+      - hosts:/etc/ansible/hosts
+      - playbooks:/container/ansible/playbooks

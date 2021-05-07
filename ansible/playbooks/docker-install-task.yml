@@ -1,0 +1,107 @@
+# Task to add Docker, removes any existing first
+  - name: remove docker
+    ignore_errors: yes
+    yum:
+      name: docker
+      state: absent
+
+  - name: remove docker-common
+    ignore_errors: yes
+    yum:
+      name: docker-common
+      state: absent
+
+  - name: remove docker-selinux
+    ignore_errors: yes
+    yum:
+      name: docker-selinux
+      state: absent
+
+  - name: remove the docker selinux engine
+    ignore_errors: yes
+    yum:
+      name: docker-engine-selinux
+      state: absent
+
+  - name: remove the docker engine
+    ignore_errors: yes
+    yum:
+      name: docker-engine
+      state: absent
+
+  - name: confirm policycoreutils-python is present
+    yum:
+      name: policycoreutils-python
+      state: present
+
+  - name: confirm container-selinux is present
+    yum:
+      name: container-selinux
+      state: present
+
+  - name: confirm yum-utils is present
+    yum:
+      name: yum-utils
+      state: present
+
+  - name: confirm device-mapper-persistent-data is present
+    yum:
+      name: device-mapper-persistent-data
+      state: present
+
+  - name: confirm lvm2 is present
+    yum:
+      name: lvm2
+      state: present
+
+  - name: add docker repo
+    shell: 'yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
+
+  - name: enable yum makecache fast
+    shell: 'yum makecache fast'
+
+  - name: install docker-ce
+    yum:
+      name: docker-ce-19.03.1-3.el7.x86_64
+      state: present
+
+  - name: Disable docker-ce repo
+    ini_file:
+      path: /etc/yum.repo.d/docker-ce.repo
+      section: docker-ce-stable
+      option: enabled
+      value: 0
+
+  - name: start docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Copy docker template in
+    copy:
+      src: files/daemon.json.template
+      dest: /etc/docker/daemon.json.template
+
+  - name: create /etc/docker/daemon.json file from above template
+    shell: "export DEBUG=false; envsubst '$$DEBUG' < /etc/docker/daemon.json.template > /etc/docker/daemon.json"
+
+  - name: stop docker service
+    service:
+      name: docker
+      state: stopped
+
+  - pause:
+      seconds: 10
+      prompt: "Pausing for 10 seconds before deleting /var/lib/docker"
+
+  - name: delete /var/lib/docker
+    shell: 'rm -rf /var/lib/docker/*'
+
+  - name: delete old deviceset-metadata
+    shell: 'rm -f /var/lib/docker/devicemapper/metadata/deviceset-metadata'
+
+  - name: restart docker service
+    service:
+      name: docker
+      state: started

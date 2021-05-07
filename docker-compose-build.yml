@@ -1,0 +1,6 @@
+version: '3.6'
+services:
+  ansible:
+    build:
+      context: ansible
+    image: localhost:5000/run-ansible-container:2105

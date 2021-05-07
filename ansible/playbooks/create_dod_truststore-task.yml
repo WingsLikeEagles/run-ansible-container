@@ -1,0 +1,13 @@
+# trust store setup task for DoD certs
+  - name: copy DOD certificate bundle
+    copy:
+      src: files/PKCS7_v5.4_DoD.pem.p7b
+      dest: /root/PKCS7_v5.4_DoD.pem.p7b
+  - name: unpack cert bundle to correct location
+    shell: "openssl pkcs7 -in /root/./PKCS7_v5.4_DoD.pem.p7b -print_certs -out /etc/pki/ca-trust/source/anchors/dod.crt"
+  - name: update the trust store with DoD Certificates
+    shell: "update-ca-trust"
+  - name: delete downloaded bundle from download location
+    file:
+      path: /root/PKCS7_v5.4_DoD.pem.p7b
+      state: absent

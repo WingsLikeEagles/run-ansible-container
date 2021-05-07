@@ -1,0 +1,7 @@
+---
+- name: Master Playbook Before STIGs
+  hosts: myhosts
+  become: yes
+  tasks:
+    - include: create_dod_truststore-task.yml
+    - include: docker-install-task.yml
